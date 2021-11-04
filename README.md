@@ -1,4 +1,4 @@
-#spring-boot-sample-akka-supervision
+# spring-boot-sample-akka-supervision
 
 demo how can a supervisor handle the failures of its subordinates.
 

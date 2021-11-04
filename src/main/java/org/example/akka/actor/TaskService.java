@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.example.akka.di.SpringExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,12 +15,12 @@ import akka.actor.OneForOneStrategy;
 import akka.actor.Status;
 import akka.actor.SupervisorStrategy;
 import akka.japi.pf.DeciderBuilder;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component("taskServiceActor")
 @Scope("prototype")
 public class TaskService extends AbstractLoggingActor {
-	private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
-	
     @Autowired
     private SpringExtension springExtension;
     
@@ -31,7 +29,7 @@ public class TaskService extends AbstractLoggingActor {
 	private SupervisorStrategy strategy = new OneForOneStrategy(false,
 			DeciderBuilder.match(RecoverableException.class, e -> {
 				//log().warning("Evaluation of a recoverable failed, restarting.");
-				logger.info("Evaluation of a recoverable failed, restarting.");
+				log.info("Evaluation of a recoverable failed, restarting.");
 				return SupervisorStrategy.restart();
 				/*
 			}).match(ArithmeticException.class, e -> {
@@ -41,7 +39,7 @@ public class TaskService extends AbstractLoggingActor {
 				*/
 			}).match(Throwable.class, e -> {
 				//log().error("Unexpected failure: {}", e.getMessage());
-				logger.warn("Unexpected failure: {}", e.getMessage());
+				log.warn("Unexpected failure: {}", e.getMessage());
 				notifyConsumerFailure(sender(), e);
 				return SupervisorStrategy.stop();
 			}//).matchAny(e -> SupervisorStrategy.escalate()
